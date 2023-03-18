@@ -1,18 +1,14 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
-import org.jetbrains.compose.compose
 
-val kotlinVersion = "1.7.10"
-val serializationVersion = "1.3.3"
-val ktorVersion = "2.0.3"
+val kotlinVersion = "1.8.10"
+val ktorVersion = "2.2.4"
 val logbackVersion = "1.2.11"
-val kotlinWrappersVersion = "1.0.0-pre.354"
-val kmongoVersion = "4.5.0"
 
 plugins {
-    kotlin("multiplatform") version "1.7.10"
+    kotlin("multiplatform") version "1.8.10"
     application //to run JVM part
-    id("org.jetbrains.compose") version "1.2.0-beta01"
-    kotlin("plugin.serialization") version "1.7.10"
+    id("org.jetbrains.compose") version "1.3.1"
+    kotlin("plugin.serialization") version "1.8.10"
 }
 
 group = "io.github.jsixface"
@@ -35,7 +31,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
             }
         }
@@ -58,7 +54,6 @@ kotlin {
                 implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
                 implementation("io.ktor:ktor-server-netty:$ktorVersion")
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
-                implementation("org.litote.kmongo:kmongo-coroutine-serialization:$kmongoVersion")
             }
         }
 
@@ -69,7 +64,6 @@ kotlin {
                 implementation("io.ktor:ktor-client-js:$ktorVersion")
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-                implementation(project.dependencies.enforcedPlatform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:$kotlinWrappersVersion"))
             }
         }
     }
