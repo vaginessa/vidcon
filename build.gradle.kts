@@ -6,9 +6,10 @@ val logbackVersion = "1.2.11"
 
 plugins {
     kotlin("multiplatform") version "1.8.10"
-    application //to run JVM part
-    id("org.jetbrains.compose") version "1.3.1"
     kotlin("plugin.serialization") version "1.8.10"
+    id("org.jetbrains.compose") version "1.3.1"
+    id("io.ktor.plugin") version "2.2.4"
+    application //to run JVM part
 }
 
 group = "io.github.jsixface"
@@ -46,14 +47,15 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.runtime)
-                implementation("io.ktor:ktor-serialization:$ktorVersion")
-                implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-                implementation("io.ktor:ktor-server-cors:$ktorVersion")
-                implementation("io.ktor:ktor-server-compression:$ktorVersion")
-                implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
-                implementation("io.ktor:ktor-server-netty:$ktorVersion")
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+                implementation("io.ktor:ktor-server-cio:$ktorVersion")
+                implementation("io.ktor:ktor-server-config-yaml:$ktorVersion")
+                implementation("io.ktor:ktor-server-compression:$ktorVersion")
+                implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+                implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
+                implementation("io.ktor:ktor-server-cors:$ktorVersion")
+                implementation("io.ktor:ktor-server-netty:$ktorVersion")
             }
         }
 
@@ -70,7 +72,10 @@ kotlin {
 }
 
 application {
-    mainClass.set("ServerKt")
+    mainClass.set("io.ktor.server.cio.EngineMain")
+//    mainClass.set("io.github.jsixface.ApplicationKt")
+    val isDevelopment: Boolean = project.ext.has("development")
+    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
 // include JS artifacts in any JAR we generate
