@@ -1,3 +1,4 @@
+import org.jetbrains.compose.jetbrainsCompose
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 val kotlinVersion = "1.8.10"
@@ -17,7 +18,7 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    jetbrainsCompose()
 }
 
 kotlin {
@@ -27,6 +28,11 @@ kotlin {
     js(IR) {
         browser {
             binaries.executable()
+            useCommonJs()
+            commonWebpackConfig {
+                scssSupport { enabled.set(true) }
+                cssSupport{ enabled.set(true)}
+            }
         }
     }
     sourceSets {
@@ -66,6 +72,11 @@ kotlin {
                 implementation("io.ktor:ktor-client-js:$ktorVersion")
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+
+                implementation("app.softwork:bootstrap-compose:0.1.14")
+                implementation("app.softwork:routing-compose:0.2.11")
+                implementation(devNpm("sass-loader", "^13.0.0"))
+                implementation(devNpm("sass", "^1.52.1"))
             }
         }
     }

@@ -1,10 +1,12 @@
 import androidx.compose.runtime.*
+import app.softwork.bootstrapcompose.require
 import org.jetbrains.compose.web.dom.Button
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
 
 fun main() {
+    require("./custom.scss")
     renderComposable(rootElementId = "root") {
         Body()
     }
@@ -14,7 +16,7 @@ fun main() {
 fun Body() {
     var counter by remember { mutableStateOf(0) }
     Div {
-        Text("Clicked: ${counter}")
+        Text("Clicked: $counter")
     }
     Button(
         attrs = {
@@ -25,4 +27,5 @@ fun Body() {
     ) {
         Text("Click")
     }
+    Navbar(listOf(Pair("name", "Name"))) {}
 }
