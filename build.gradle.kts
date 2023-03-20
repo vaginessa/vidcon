@@ -1,3 +1,4 @@
+import org.jetbrains.compose.jetbrainsCompose
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 val kotlinVersion = "1.8.10"
@@ -6,9 +7,10 @@ val logbackVersion = "1.2.11"
 
 plugins {
     kotlin("multiplatform") version "1.8.10"
-    application //to run JVM part
-    id("org.jetbrains.compose") version "1.3.1"
     kotlin("plugin.serialization") version "1.8.10"
+    id("org.jetbrains.compose") version "1.3.1"
+    id("io.ktor.plugin") version "2.2.4"
+    application //to run JVM part
 }
 
 group = "io.github.jsixface"
@@ -16,7 +18,7 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    jetbrainsCompose()
 }
 
 kotlin {
@@ -26,6 +28,12 @@ kotlin {
     js(IR) {
         browser {
             binaries.executable()
+            useCommonJs()
+            commonWebpackConfig {
+                scssSupport {
+                    enabled.set(true)
+                }
+            }
         }
     }
     sourceSets {
@@ -46,14 +54,15 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.runtime)
-                implementation("io.ktor:ktor-serialization:$ktorVersion")
-                implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-                implementation("io.ktor:ktor-server-cors:$ktorVersion")
-                implementation("io.ktor:ktor-server-compression:$ktorVersion")
-                implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
-                implementation("io.ktor:ktor-server-netty:$ktorVersion")
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+                implementation("io.ktor:ktor-server-cio:$ktorVersion")
+                implementation("io.ktor:ktor-server-config-yaml:$ktorVersion")
+                implementation("io.ktor:ktor-server-compression:$ktorVersion")
+                implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+                implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
+                implementation("io.ktor:ktor-server-cors:$ktorVersion")
+                implementation("io.ktor:ktor-server-netty:$ktorVersion")
             }
         }
 
@@ -64,13 +73,20 @@ kotlin {
                 implementation("io.ktor:ktor-client-js:$ktorVersion")
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+
+                implementation("app.softwork:bootstrap-compose:0.1.14")
+                implementation("app.softwork:routing-compose:0.2.11")
+
             }
         }
     }
 }
 
 application {
-    mainClass.set("ServerKt")
+    mainClass.set("io.ktor.server.cio.EngineMain")
+//    mainClass.set("io.github.jsixface.ApplicationKt")
+    val isDevelopment: Boolean = project.ext.has("development")
+    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
 // include JS artifacts in any JAR we generate

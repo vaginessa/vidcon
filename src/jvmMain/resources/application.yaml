@@ -1,0 +1,6 @@
+ktor:
+  application:
+    modules:
+      - io.github.jsixface.ApplicationKt.module
+  deployment:
+    port: "$PORT:8080"
