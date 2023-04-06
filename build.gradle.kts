@@ -41,6 +41,8 @@ kotlin {
             dependencies {
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
+                api("io.ktor:ktor-resources:$ktorVersion")
+                api("io.ktor:ktor-client-resources:$ktorVersion")
             }
         }
 
