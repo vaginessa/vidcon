@@ -2,13 +2,15 @@ package io.github.jsixface
 
 import io.github.jsixface.plugins.*
 import io.ktor.server.application.*
+import io.ktor.server.application.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 fun main(args: Array<String>): Unit =
     io.ktor.server.cio.EngineMain.main(args)
 
-@Suppress("unused") // application.conf references the main function. This annotation prevents the IDE from marking it as unused.
+@Suppress("unused") // application.conf references the main function.
+// This annotation prevents the IDE from marking it as unused.
 fun Application.module() {
     configureHTTP()
     configureRouting()

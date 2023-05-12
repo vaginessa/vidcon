@@ -18,7 +18,6 @@ class AppContainer {
         install(ContentNegotiation) {
             json(Json {
                 prettyPrint = true
-
             })
         }
     }

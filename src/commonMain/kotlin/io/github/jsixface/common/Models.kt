@@ -1,10 +1,11 @@
-package io.github.jsixface
+package io.github.jsixface.common
 
-import kotlinx.serialization.*
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 
 enum class TrackType {
     Video, Audio, Subtitle
@@ -26,8 +27,6 @@ data class VideoFile(
     val videos: List<MediaTrack> = listOf(),
     val subtitles: List<MediaTrack> = listOf()
 ) {
-    @Transient
-    private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
     val videoInfo: String
         get() = videos.joinToString { it.codec }
 
@@ -38,8 +37,12 @@ data class VideoFile(
         get() = subtitles.joinToString { it.codec }
 
     val modified: String
-        get() = LocalDateTime.ofInstant(Instant.ofEpochMilli(modifiedTime), ZoneId.systemDefault())
-            .format(formatter)
+        get()  {
+            val dateTime = Instant.fromEpochMilliseconds(modifiedTime)
+                .toLocalDateTime(TimeZone.currentSystemDefault())
+            return "${dateTime.date} ${dateTime.time}"
+        }
+
 }
 
 @Serializable
@@ -56,9 +59,3 @@ data class MediaStream(
 data class MediaProbeInfo(
     val streams: List<MediaStream>
 )
-
-class Context(val content: MutableMap<String, Any> = mutableMapOf()) : MutableMap<String, Any> by content {
-    fun error(e: Exception) {
-        content[e.javaClass.simpleName] = e.localizedMessage
-    }
-}

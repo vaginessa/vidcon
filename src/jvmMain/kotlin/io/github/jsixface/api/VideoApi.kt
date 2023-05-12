@@ -1,7 +1,7 @@
 package io.github.jsixface.api
 
-import io.github.jsixface.TrackType
-import io.github.jsixface.VideoFile
+import io.github.jsixface.common.TrackType
+import io.github.jsixface.common.VideoFile
 import io.github.jsixface.utils.CodecUtils.parseMediaInfo
 import kotlin.io.path.*
 

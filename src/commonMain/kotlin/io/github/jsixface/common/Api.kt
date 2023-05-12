@@ -6,8 +6,8 @@ sealed interface Api {
 
     @Resource("/videos")
     object Videos : Api {
-        @Resource("{path}")
-        class Video(val parent: Videos = Videos, val path: String) : Api
+        @Resource("video")
+        class Video(val parent: Videos = Videos, val path: String?) : Api
     }
 
     @Resource("/locations")

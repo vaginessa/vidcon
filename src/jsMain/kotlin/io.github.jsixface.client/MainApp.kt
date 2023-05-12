@@ -6,8 +6,8 @@ import androidx.compose.runtime.getValue
 import app.softwork.bootstrapcompose.*
 import app.softwork.routingcompose.HashRouter
 import app.softwork.routingcompose.Router
-import app.softwork.routingcompose.Routing
 import io.github.jsixface.common.Api
+import io.github.jsixface.viewmodel.ViewModels
 import org.jetbrains.compose.web.dom.H1
 import org.jetbrains.compose.web.dom.Li
 import org.jetbrains.compose.web.dom.Text
@@ -20,6 +20,9 @@ fun MainApp(app: AppContainer) {
     HashRouter(initPath = "locations") {
         route("locations" ){
             Text("Current route = ${Router.current.currentPath}")
+        }
+        route("videos") {
+            VideosPage(ViewModels(app.client))
         }
         noMatch {
             Text("Current route = ${Router.current.currentPath}")
