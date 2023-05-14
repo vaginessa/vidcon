@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import app.softwork.bootstrapcompose.Button
+import app.softwork.bootstrapcompose.Color
 import app.softwork.bootstrapcompose.Column
 import app.softwork.bootstrapcompose.Container
 import app.softwork.bootstrapcompose.FormLabel
@@ -13,6 +14,9 @@ import app.softwork.bootstrapcompose.Row
 import app.softwork.bootstrapcompose.Select
 import app.softwork.bootstrapcompose.SelectContext
 import app.softwork.bootstrapcompose.SelectSize
+import app.softwork.bootstrapcompose.Table
+import app.softwork.bootstrapcompose.Table.FixedHeaderProperty
+import app.softwork.bootstrapcompose.ZIndex
 import app.softwork.routingcompose.Router
 import app.softwork.routingcompose.navigate
 import io.github.jsixface.common.AudioCodecs
@@ -27,6 +31,8 @@ import io.github.jsixface.common.VideoCodecs
 import io.github.jsixface.viewmodel.VideosViewModel
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.compose.web.attributes.onSubmit
+import org.jetbrains.compose.web.css.dppx
+import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Form
 import org.jetbrains.compose.web.dom.H2
@@ -45,36 +51,28 @@ import org.jetbrains.compose.web.dom.Tr
 fun VideosPage(viewModel: VideosViewModel) {
     val videos by viewModel.videos.collectAsState(listOf(), Dispatchers.Default)
     val router = Router.current
+    val rowsPerPage = remember { mutableStateOf(20) }
+    if (videos.isEmpty()) return
 
     Container {
-        Table(attrs = { classes("table") }) {
-            Thead {
-                Tr {
-                    Th { Text("Filename") }
-                    Th { Text("Audio Codecs") }
-                    Th { Text("Video Codecs") }
-                    Th { Text("Modified time") }
-                    Th { Text("") }
-                }
-            }
-            Tbody {
-                videos.forEach { v ->
-                    Tr {
-                        Td { Text(v.fileName) }
-                        Td { Text(v.audioInfo) }
-                        Td { Text(v.videoInfo) }
-                        Td { Text(v.modified) }
-                        Td {
-                            Button(
-                                title = "Convert",
-                                attrs = { classes("btn-primary") }) {
-                                router.navigate(
-                                    "/video",
-                                    mapOf("path" to v.fileName)
-                                )
-                            }
-                        }
-                    }
+        Table(
+            pagination = Table.OffsetPagination(
+                data = videos,
+                entriesPerPageLimit = rowsPerPage
+            ),
+            stripedRows = true,
+            fixedHeader = FixedHeaderProperty(
+                topSize = 50.px,
+                zIndex = ZIndex(1000)
+            )
+        ) { i, file ->
+            column("Filename") { Text(file.fileName) }
+            column("Audio Codecs") { Text(file.audioInfo) }
+            column("Video Codecs") { Text(file.videoInfo) }
+            column("Modified") { Text(file.modified) }
+            column("") {
+                Button(title = "Convert", color = Color.Success) {
+                    router.navigate("/video", mapOf("path" to file.fileName))
                 }
             }
         }
@@ -93,9 +91,8 @@ fun ShowVideo(viewModel: VideosViewModel) {
         Container {
             Row {
                 Column(size = 8, attrs = { classes("offset-md-2") }) {
-//                Div(attrs = { classes("col-md-8", "offset-md-2", "mt-5") }) {
                     H2(attrs = { classes("text-center", "my-3") }) { Text(v.fileName) }
-                    Form(attrs = {onSubmit { it.preventDefault() }}) {
+                    Form(attrs = { onSubmit { it.preventDefault() } }) {
                         Row {
                             Column(size = 6) {
                                 H4(attrs = { classes("text-center", "mb-3") }) { Text("Audio") }
