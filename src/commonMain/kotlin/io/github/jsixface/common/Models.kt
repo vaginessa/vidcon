@@ -6,6 +6,16 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+val AudioCodecs = listOf("aac", "ac3", "mp3")
+val VideoCodecs = listOf("hevc", "h264", "h265", "mpeg4")
+val SubtitleCodecs = listOf("srt")
+
+@Serializable
+sealed class Conversion {
+    object Copy: Conversion()
+    object Drop: Conversion()
+    data class Convert(val codec: String): Conversion()
+}
 
 enum class TrackType {
     Video, Audio, Subtitle
