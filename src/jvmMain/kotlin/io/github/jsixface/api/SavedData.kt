@@ -1,6 +1,6 @@
 package io.github.jsixface.api
 
-import io.github.jsixface.VideoFile
+import io.github.jsixface.common.VideoFile
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString

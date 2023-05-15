@@ -1,31 +1,52 @@
 import androidx.compose.runtime.*
-import app.softwork.bootstrapcompose.require
+import app.softwork.bootstrapcompose.*
+import io.github.jsixface.client.AppContainer
+import io.github.jsixface.client.MainApp
+import kotlinx.coroutines.MainScope
 import org.jetbrains.compose.web.dom.Button
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
 
+val scope = MainScope()
 fun main() {
-    require("./custom.scss")
     renderComposable(rootElementId = "root") {
-        Body()
+        MainApp(AppContainer())
     }
 }
 
 @Composable
 fun Body() {
-    var counter by remember { mutableStateOf(0) }
-    Div {
-        Text("Clicked: $counter")
-    }
-    Button(
-        attrs = {
-            onClick { _ ->
-                counter++
+
+    ChecksAndRadiosView()
+}
+
+@Composable
+fun ChecksAndRadiosView() {
+    Container {
+        Row {
+            Column(size = 6) {
+                var checkVal1 by remember { mutableStateOf(false) }
+                var checkVal2 by remember { mutableStateOf(true) }
+                Card(header = {
+                    Text(value = "Checks")
+                }) {
+                    Checkbox(checkVal1, label = "Default checkbox") {
+                        checkVal1 = it
+                    }
+                    Checkbox(checkVal2, label = "Checked checkbox") {
+                        checkVal2 = it
+                    }
+                }
+            }
+            Column(size = 6) {
+                Card(header = {
+                    Text("Disabled Checks")
+                }) {
+                    Checkbox(checked = false, disabled = true, label = "Disabled checkbox") {}
+                    Checkbox(checked = true, disabled = true, label = "Disabled checked checkbox") {}
+                }
             }
         }
-    ) {
-        Text("Click")
     }
-    Navbar(listOf(Pair("name", "Name"))) {}
 }

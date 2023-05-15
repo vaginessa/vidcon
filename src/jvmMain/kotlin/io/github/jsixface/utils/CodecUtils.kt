@@ -1,8 +1,8 @@
 package io.github.jsixface.utils
 
-import io.github.jsixface.MediaProbeInfo
-import io.github.jsixface.MediaTrack
-import io.github.jsixface.TrackType
+import io.github.jsixface.common.MediaProbeInfo
+import io.github.jsixface.common.MediaTrack
+import io.github.jsixface.common.TrackType
 import io.github.jsixface.logger
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json

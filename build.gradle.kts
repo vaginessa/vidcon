@@ -30,16 +30,21 @@ kotlin {
             binaries.executable()
             useCommonJs()
             commonWebpackConfig {
-                scssSupport { enabled.set(true) }
-                cssSupport{ enabled.set(true)}
+                scssSupport {
+                    enabled.set(true)
+                }
             }
         }
     }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+                api("io.ktor:ktor-resources:$ktorVersion")
+                api("io.ktor:ktor-client-resources:$ktorVersion")
             }
         }
 
@@ -62,6 +67,7 @@ kotlin {
                 implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
                 implementation("io.ktor:ktor-server-cors:$ktorVersion")
                 implementation("io.ktor:ktor-server-netty:$ktorVersion")
+                implementation("io.ktor:ktor-server-resources:$ktorVersion")
             }
         }
 
@@ -75,8 +81,7 @@ kotlin {
 
                 implementation("app.softwork:bootstrap-compose:0.1.14")
                 implementation("app.softwork:routing-compose:0.2.11")
-                implementation(devNpm("sass-loader", "^13.0.0"))
-                implementation(devNpm("sass", "^1.52.1"))
+
             }
         }
     }
