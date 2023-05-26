@@ -12,8 +12,11 @@ val SubtitleCodecs = listOf("srt")
 
 @Serializable
 sealed class Conversion {
+    @Serializable
     object Copy: Conversion()
+    @Serializable
     object Drop: Conversion()
+    @Serializable
     data class Convert(val codec: String): Conversion()
 }
 

@@ -65,7 +65,7 @@ fun VideosPage(viewModel: VideosViewModel) {
                 topSize = 50.px,
                 zIndex = ZIndex(1000)
             )
-        ) { i, file ->
+        ) { _, file ->
             column("Filename") { Text(file.fileName) }
             column("Audio Codecs") { Text(file.audioInfo) }
             column("Video Codecs") { Text(file.videoInfo) }
@@ -94,23 +94,33 @@ fun ShowVideo(viewModel: VideosViewModel) {
                     H2(attrs = { classes("text-center", "my-3") }) { Text(v.fileName) }
                     Form(attrs = { onSubmit { it.preventDefault() } }) {
                         Row {
-                            Column(size = 6) {
-                                H4(attrs = { classes("text-center", "mb-3") }) { Text("Audio") }
-                                v.audios.forEach { a -> StreamView(a) { conversion[a] = it } }
-                                Hr { }
-                            }
-                            Column(size = 6) {
-                                H4(attrs = { classes("text-center", "mb-3") }) { Text("Video") }
-                                StreamView(v.videos[0]) { conversion[v.videos[0]] = it }
-                                Hr { }
+                            H4(attrs = { classes("text-center", "mb-3") }) { Text("Audio") }
+                            v.audios.forEach { a -> StreamView(a) { conversion[a] = it } }
+                        }
+                        if (v.subtitles.isNotEmpty()) {
+                            Row {
+                                H4(attrs = { classes("text-center", "mb-3") }) { Text("Subtitle") }
+                                v.subtitles.forEach { a -> StreamView(a) { conversion[a] = it } }
                             }
                         }
                         Row {
-                            Button(
-                                title = "Convert",
-                                attrs = { classes("btn-success", "btn-lg") }) {
-                                console.log("Conversion list: $conversion")
+                            H4(attrs = { classes("text-center", "mb-3") }) { Text("Video") }
+                            StreamView(v.videos[0]) { conversion[v.videos[0]] = it }
+                        }
+                        Row {
+                            Column(size = 4) {}
+                            Column(size = 4) {
+                                Button(
+                                    title = "Convert",
+                                    attrs = { classes("btn-success", "btn-lg") }) {
+                                    console.log("Conversion list: $conversion")
+                                    (v.videos + v.audios + v.subtitles).forEach {
+                                        conversion.getOrPut(it) { Conversion.Copy }
+                                    }
+                                    viewModel.convert(v.fileName, conversion)
+                                }
                             }
+                            Column(size = 4) {}
                         }
                     }
                 }
@@ -123,17 +133,19 @@ fun ShowVideo(viewModel: VideosViewModel) {
 fun StreamView(track: MediaTrack, onSelect: (Conversion) -> Unit) {
     FormGroup {
         Row {
-            Column(size = 6) { FormLabel { Text("Codec: ${track.codec}") } }
-            Column(size = 6) { FormLabel { Text("Index: ${track.number}") } }
-        }
-        Select(size = SelectSize.Large, multiple = false, onChange = {
-            when (it.first()) {
-                "" -> onSelect(Conversion.Copy)
-                "drop" -> onSelect(Conversion.Drop)
-                else -> onSelect(Conversion.Convert(it.first()))
+            Column(size = 3) { FormLabel { Text("Codec: ${track.codec}") } }
+            Column(size = 3) { FormLabel { Text("Index: ${track.number}") } }
+            Column(size = 6) {
+                Select(size = SelectSize.Large, multiple = false, onChange = {
+                    when (it.first()) {
+                        "" -> onSelect(Conversion.Copy)
+                        "drop" -> onSelect(Conversion.Drop)
+                        else -> onSelect(Conversion.Convert(it.first()))
+                    }
+                }) {
+                    selectOptions(track.type)
+                }
             }
-        }) {
-            selectOptions(track.type)
         }
     }
 }

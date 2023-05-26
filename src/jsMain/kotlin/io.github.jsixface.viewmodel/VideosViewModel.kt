@@ -1,10 +1,16 @@
 package io.github.jsixface.viewmodel
 
 import io.github.jsixface.common.Api
+import io.github.jsixface.common.Conversion
+import io.github.jsixface.common.MediaTrack
 import io.github.jsixface.common.VideoFile
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.get
+import io.ktor.client.plugins.resources.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
@@ -30,5 +36,17 @@ class VideosViewModel(private val client: HttpClient) {
 
     fun loadFile(file: String): Flow<VideoFile?> = flow {
         emit(client.get(Api.Videos.Video(path = file)).body())
+    }
+
+    fun convert(file: String, conversionList: Map<MediaTrack, Conversion>) {
+        scope.launch {
+            val toConvert = conversionList.entries.map { it.toPair() }
+            console.log("Convert List: $toConvert")
+            // Key cannot be converted to json
+            client.post(Api.Videos.Video(path = file)) {
+                contentType(ContentType.Application.Json)
+                setBody(toConvert)
+            }
+        }
     }
 }
