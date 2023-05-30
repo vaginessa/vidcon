@@ -1,9 +1,12 @@
 import org.jetbrains.compose.jetbrainsCompose
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
-val kotlinVersion = "1.8.10"
-val ktorVersion = "2.2.4"
-val logbackVersion = "1.2.11"
+object Versions {
+    const val koin = "3.2.0"
+    const val ktor = "2.2.4"
+    const val logback = "1.2.11"
+}
+
 
 plugins {
     kotlin("multiplatform") version "1.8.10"
@@ -40,11 +43,11 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-                implementation("io.ktor:ktor-client-core:$ktorVersion")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:${Versions.ktor}")
+                implementation("io.ktor:ktor-client-core:${Versions.ktor}")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
-                api("io.ktor:ktor-resources:$ktorVersion")
-                api("io.ktor:ktor-client-resources:$ktorVersion")
+                api("io.ktor:ktor-resources:${Versions.ktor}")
+                api("io.ktor:ktor-client-resources:${Versions.ktor}")
             }
         }
 
@@ -58,16 +61,29 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.runtime)
-                implementation("ch.qos.logback:logback-classic:$logbackVersion")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-                implementation("io.ktor:ktor-server-cio:$ktorVersion")
-                implementation("io.ktor:ktor-server-config-yaml:$ktorVersion")
-                implementation("io.ktor:ktor-server-compression:$ktorVersion")
-                implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
-                implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
-                implementation("io.ktor:ktor-server-cors:$ktorVersion")
-                implementation("io.ktor:ktor-server-netty:$ktorVersion")
-                implementation("io.ktor:ktor-server-resources:$ktorVersion")
+                implementation("ch.qos.logback:logback-classic:${Versions.logback}")
+
+                implementation("io.insert-koin:koin-core:${Versions.koin}")
+                implementation("io.insert-koin:koin-ktor:${Versions.koin}")
+                implementation("io.insert-koin:koin-logger-slf4j:${Versions.koin}")
+
+                implementation("io.ktor:ktor-serialization-kotlinx-json:${Versions.ktor}")
+                implementation("io.ktor:ktor-server-cio:${Versions.ktor}")
+                implementation("io.ktor:ktor-server-config-yaml:${Versions.ktor}")
+                implementation("io.ktor:ktor-server-compression:${Versions.ktor}")
+                implementation("io.ktor:ktor-server-content-negotiation:${Versions.ktor}")
+                implementation("io.ktor:ktor-server-core-jvm:${Versions.ktor}")
+                implementation("io.ktor:ktor-server-cors:${Versions.ktor}")
+                implementation("io.ktor:ktor-server-netty:${Versions.ktor}")
+                implementation("io.ktor:ktor-server-resources:${Versions.ktor}")
+                implementation("io.ktor:ktor-server-websockets:${Versions.ktor}")
+            }
+        }
+
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation("junit:junit:4.13")
             }
         }
 
@@ -75,9 +91,9 @@ kotlin {
             dependencies {
                 implementation(compose.web.core)
                 implementation(compose.runtime)
-                implementation("io.ktor:ktor-client-js:$ktorVersion")
-                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+                implementation("io.ktor:ktor-client-js:${Versions.ktor}")
+                implementation("io.ktor:ktor-client-content-negotiation:${Versions.ktor}")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:${Versions.ktor}")
 
                 implementation("app.softwork:bootstrap-compose:0.1.14")
                 implementation("app.softwork:routing-compose:0.2.11")
@@ -97,7 +113,7 @@ application {
 // include JS artifacts in any JAR we generate
 tasks.getByName<Jar>("jvmJar") {
     val taskName = if (project.hasProperty("isProduction")
-        || project.gradle.startParameter.taskNames.contains("installDist")
+            || project.gradle.startParameter.taskNames.contains("installDist")
     ) {
         "jsBrowserProductionWebpack"
     } else {
@@ -105,7 +121,12 @@ tasks.getByName<Jar>("jvmJar") {
     }
     val webpackTask = tasks.getByName<KotlinWebpack>(taskName)
     dependsOn(webpackTask) // make sure JS gets compiled first
-    from(File(webpackTask.destinationDirectory, webpackTask.outputFileName)) // bring output file along into the JAR
+    from(
+            File(
+                    webpackTask.destinationDirectory,
+                    webpackTask.outputFileName
+            )
+    ) // bring output file along into the JAR
 }
 
 tasks {

@@ -35,7 +35,7 @@ private val json = Json {
     ignoreUnknownKeys = true
     prettyPrint = true
 }
-private const val DATA_FILE_NAME = ".ffanything.json"
+private const val DATA_FILE_NAME = ".vid-con.json"
 private val homeDir = System.getenv()["HOME"] ?: "."
 private val dataFile = File(homeDir, DATA_FILE_NAME)
 

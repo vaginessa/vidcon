@@ -1,9 +1,7 @@
 package io.github.jsixface.plugins
 
-import io.github.jsixface.api.LocationApi
-import io.github.jsixface.api.VideoApi
-import io.github.jsixface.route.location
-import io.github.jsixface.route.video
+import io.github.jsixface.route.locationRoutes
+import io.github.jsixface.route.videoRoutes
 import io.ktor.http.ContentType
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
@@ -16,8 +14,6 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 
 fun Application.configureRouting() {
-    val videoApi = VideoApi()
-    val locationApi = LocationApi()
     install(Resources)
     routing {
         static("/static") {
@@ -34,8 +30,7 @@ fun Application.configureRouting() {
             resources("")
         }
 
-        video(videoApi)
-        location(locationApi)
-
+        videoRoutes()
+        locationRoutes()
     }
 }

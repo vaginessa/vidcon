@@ -31,20 +31,12 @@ import io.github.jsixface.common.VideoCodecs
 import io.github.jsixface.viewmodel.VideosViewModel
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.compose.web.attributes.onSubmit
-import org.jetbrains.compose.web.css.dppx
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Form
 import org.jetbrains.compose.web.dom.H2
 import org.jetbrains.compose.web.dom.H4
-import org.jetbrains.compose.web.dom.Hr
-import org.jetbrains.compose.web.dom.Table
-import org.jetbrains.compose.web.dom.Tbody
-import org.jetbrains.compose.web.dom.Td
 import org.jetbrains.compose.web.dom.Text
-import org.jetbrains.compose.web.dom.Th
-import org.jetbrains.compose.web.dom.Thead
-import org.jetbrains.compose.web.dom.Tr
 
 
 @Composable
@@ -134,9 +126,9 @@ fun StreamView(track: MediaTrack, onSelect: (Conversion) -> Unit) {
     FormGroup {
         Row {
             Column(size = 3) { FormLabel { Text("Codec: ${track.codec}") } }
-            Column(size = 3) { FormLabel { Text("Index: ${track.number}") } }
+            Column(size = 3) { FormLabel { Text("Index: ${track.index}") } }
             Column(size = 6) {
-                Select(size = SelectSize.Large, multiple = false, onChange = {
+                Select(size = SelectSize.Default, multiple = false, onChange = {
                     when (it.first()) {
                         "" -> onSelect(Conversion.Copy)
                         "drop" -> onSelect(Conversion.Drop)

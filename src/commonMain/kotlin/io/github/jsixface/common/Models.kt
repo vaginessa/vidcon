@@ -7,28 +7,30 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 val AudioCodecs = listOf("aac", "ac3", "mp3")
-val VideoCodecs = listOf("hevc", "h264", "h265", "mpeg4")
+val VideoCodecs = listOf("libx265", "libx264", "hevc_videotoolbox", "h264_videotoolbox", "mpeg4")
 val SubtitleCodecs = listOf("srt")
 
 @Serializable
 sealed class Conversion {
     @Serializable
-    object Copy: Conversion()
+    object Copy : Conversion()
+
     @Serializable
-    object Drop: Conversion()
+    object Drop : Conversion()
+
     @Serializable
-    data class Convert(val codec: String): Conversion()
+    data class Convert(val codec: String) : Conversion()
 }
 
-enum class TrackType {
-    Video, Audio, Subtitle
+enum class TrackType(val stream: String) {
+    Video("v"), Audio("a"), Subtitle("a")
 }
 
 @Serializable
 data class MediaTrack(
-    val type: TrackType,
-    val number: Int,
-    val codec: String
+        val type: TrackType,
+        val index: Int,
+        val codec: String
 )
 
 @Serializable
@@ -50,7 +52,7 @@ data class VideoFile(
         get() = subtitles.joinToString { it.codec }
 
     val modified: String
-        get()  {
+        get() {
             val dateTime = Instant.fromEpochMilliseconds(modifiedTime)
                 .toLocalDateTime(TimeZone.currentSystemDefault())
             return "${dateTime.date} ${dateTime.time}"
