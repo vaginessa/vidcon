@@ -14,10 +14,10 @@ class VideoApi {
     fun getVideos(): VideoList {
         val data = SavedData.load()
         val scan = mutableMapOf<String, VideoFile>()
-        data.locations.forEach { l ->
+        data.settings.libraryLocations.forEach { l ->
             val loc = Path(l)
             loc.walk(PathWalkOption.FOLLOW_LINKS).forEach { p ->
-                if (p.isDirectory().not() && videExtensions.contains(p.extension.lowercase())) {
+                if (p.isDirectory().not() && data.settings.videoExtensions.contains(p.extension.lowercase())) {
                     scan[p.pathString] = VideoFile(
                         path = p.pathString,
                         fileName = p.name,
@@ -51,9 +51,5 @@ class VideoApi {
         val toDelete = data.keys.filter { !scan.containsKey(it) }
         toDelete.forEach { data.remove(it) }
         return toScan
-    }
-
-    companion object {
-        val videExtensions = listOf("avi", "mp4", "mkv", "mpeg4")
     }
 }

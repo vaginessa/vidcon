@@ -7,7 +7,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 val AudioCodecs = listOf("aac", "ac3", "mp3")
-val VideoCodecs = listOf("libx265", "libx264", "hevc_videotoolbox", "h264_videotoolbox", "mpeg4")
+val VideoCodecs = listOf("libx265", "libx264", "mpeg4")
 val SubtitleCodecs = listOf("srt")
 
 @Serializable

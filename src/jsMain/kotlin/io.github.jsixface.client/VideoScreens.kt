@@ -48,15 +48,15 @@ fun VideosPage(viewModel: VideosViewModel) {
 
     Container {
         Table(
-            pagination = Table.OffsetPagination(
-                data = videos,
-                entriesPerPageLimit = rowsPerPage
-            ),
-            stripedRows = true,
-            fixedHeader = FixedHeaderProperty(
-                topSize = 50.px,
-                zIndex = ZIndex(1000)
-            )
+                pagination = Table.OffsetPagination(
+                        data = videos,
+                        entriesPerPageLimit = rowsPerPage
+                ),
+                stripedRows = true,
+                fixedHeader = FixedHeaderProperty(
+                        topSize = 50.px,
+                        zIndex = ZIndex(1000)
+                )
         ) { _, file ->
             column("Filename") { Text(file.fileName) }
             column("Audio Codecs") { Text(file.audioInfo) }
@@ -85,26 +85,26 @@ fun ShowVideo(viewModel: VideosViewModel) {
                 Column(size = 8, attrs = { classes("offset-md-2") }) {
                     H2(attrs = { classes("text-center", "my-3") }) { Text(v.fileName) }
                     Form(attrs = { onSubmit { it.preventDefault() } }) {
-                        Row {
-                            H4(attrs = { classes("text-center", "mb-3") }) { Text("Audio") }
+                        Row(attrs = { classes("mb-3") }) {
+                            H4(attrs = { classes("text-center") }) { Text("Audio") }
                             v.audios.forEach { a -> StreamView(a) { conversion[a] = it } }
                         }
                         if (v.subtitles.isNotEmpty()) {
-                            Row {
-                                H4(attrs = { classes("text-center", "mb-3") }) { Text("Subtitle") }
+                            Row(attrs = { classes("mb-3") }) {
+                                H4(attrs = { classes("text-center") }) { Text("Subtitle") }
                                 v.subtitles.forEach { a -> StreamView(a) { conversion[a] = it } }
                             }
                         }
-                        Row {
-                            H4(attrs = { classes("text-center", "mb-3") }) { Text("Video") }
+                        Row(attrs = { classes("mb-3") }) {
+                            H4(attrs = { classes("text-center") }) { Text("Video") }
                             StreamView(v.videos[0]) { conversion[v.videos[0]] = it }
                         }
-                        Row {
+                        Row(attrs = { classes("mb-3") }) {
                             Column(size = 4) {}
                             Column(size = 4) {
                                 Button(
-                                    title = "Convert",
-                                    attrs = { classes("btn-success", "btn-lg") }) {
+                                        title = "Convert",
+                                        attrs = { classes("btn-success", "btn-lg") }) {
                                     console.log("Conversion list: $conversion")
                                     (v.videos + v.audios + v.subtitles).forEach {
                                         conversion.getOrPut(it) { Conversion.Copy }

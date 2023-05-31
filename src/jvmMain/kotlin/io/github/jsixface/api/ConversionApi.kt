@@ -10,44 +10,46 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import java.io.File
 import java.io.InputStream
 import java.io.UncheckedIOException
+import java.time.LocalDateTime
+import java.util.UUID
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-class ConversionApi {
+class ConversionApi(settingsApi: SettingsApi) {
     private val logger = logger()
-    private val currentJobs = mutableMapOf<String, Job>()
-    private val currentProgress = mutableMapOf<String, MutableStateFlow<Int>>()
     private val scope = CoroutineScope(Dispatchers.IO)
+    private val jobs = mutableListOf<ConversionJob>()
+    private val workspace = File(settingsApi.getSettings().workspaceLocation)
 
     init {
-        if (ConversionOutLocation.isDirectory.not()) {
-            ConversionOutLocation.mkdirs()
+        if (workspace.isDirectory.not()) {
+            workspace.mkdirs()
         }
-        logger.info("scope status = $scope.")
     }
 
     suspend fun startConversion(
             file: VideoFile,
             convSpecs: List<Pair<MediaTrack, Conversion>>
     ): Boolean {
-        val newFile = File(ConversionOutLocation, file.fileName)
-        // check if there is a current job running for a file
-        currentJobs[file.path]?.let { job ->
-            // if yes, stop it. Clean up the progress files
-            job.cancelAndJoin()
-            if (newFile.exists()) {
-                newFile.delete()
-            }
-        }
+        val now = LocalDateTime.now()
+        val newDir = File(workspace, "$now-${file.fileName}")
+        newDir.mkdirs()
+        val newFile = File(newDir, file.fileName)
 
         // start the new job & add it to the current jobs
         val updates = MutableStateFlow(0)
-        currentProgress[file.path] = updates
-        currentJobs[file.path] = scope.launch {
+        val job = scope.launch {
             startJob(file, convSpecs, newFile, updates)
         }
+        val convJob = ConversionJob(
+                videoFile = file,
+                convSpecs = convSpecs,
+                outFile = newFile,
+                job = job,
+                progress = updates
+        )
+        jobs.add(convJob)
         logger.info("convert file ${file.fileName}")
-
         return true
     }
 
@@ -140,8 +142,13 @@ class ConversionApi {
         }
         return result
     }
-
-    companion object {
-        val ConversionOutLocation = File("/tmp/vid-con")
-    }
 }
+
+data class ConversionJob(
+        val videoFile: VideoFile,
+        val convSpecs: List<Pair<MediaTrack, Conversion>>,
+        val outFile: File,
+        val job: Job,
+        val progress: MutableStateFlow<Int> = MutableStateFlow(0),
+        val jobId: UUID = UUID.randomUUID()
+)

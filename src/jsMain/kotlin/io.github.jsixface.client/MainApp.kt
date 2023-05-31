@@ -14,6 +14,7 @@ import app.softwork.bootstrapcompose.Row
 import app.softwork.routingcompose.HashRouter
 import app.softwork.routingcompose.Router
 import io.github.jsixface.common.Api
+import io.github.jsixface.viewmodel.SettingsViewModel
 import io.github.jsixface.viewmodel.VideosViewModel
 import org.jetbrains.compose.web.dom.H1
 import org.jetbrains.compose.web.dom.Li
@@ -23,13 +24,15 @@ import org.jetbrains.compose.web.dom.Text
 fun MainApp(app: AppContainer) {
     val api by app.api.collectAsState()
     Header(api)
-    HashRouter(initPath = "locations") {
+    HashRouter(initPath = "videos") {
         val videosViewModel = VideosViewModel(app.client)
-        route("locations" ){
-            Text("Current route = ${Router.current.currentPath}")
+        route("settings") {
+            ShowSettings(SettingsViewModel(app.client))
+            app.api.value = Api.Settings
         }
         route("videos") {
             VideosPage(videosViewModel)
+            app.api.value = Api.Videos
         }
         route("video") {
             ShowVideo(videosViewModel)
@@ -55,20 +58,20 @@ fun Header(api: Api) {
 @Composable
 fun TopNav(api: Api) {
     Navbar(
-        placement = NavbarPlacement.StickyTop,
-        collapseBehavior = NavbarCollapseBehavior.AtBreakpoint(Breakpoint.Large),
+            placement = NavbarPlacement.StickyTop,
+            collapseBehavior = NavbarCollapseBehavior.AtBreakpoint(Breakpoint.Large),
     ) {
         NavbarNav {
             Li(attrs = { classes("nav-item") }) {
                 NavbarLink(
-                    active = api == Api.Locations,
-                    link = "#/locations"
-                ) {  Text("Locations") }
+                        active = api == Api.Settings,
+                        link = "#/settings"
+                ) { Text("Settings") }
             }
             Li(attrs = { classes("nav-item") }) {
                 NavbarLink(
-                    active = api == Api.Videos,
-                    link = "#/videos"
+                        active = api == Api.Videos,
+                        link = "#/videos"
                 ) { Text("Videos") }
             }
         }

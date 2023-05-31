@@ -23,5 +23,5 @@ class AppContainer {
     }
 
 
-    val api: MutableStateFlow<Api> = MutableStateFlow(Api.Locations)
+    val api: MutableStateFlow<Api> = MutableStateFlow(Api.Videos)
 }

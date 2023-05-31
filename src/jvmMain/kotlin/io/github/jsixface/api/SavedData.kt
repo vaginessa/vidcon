@@ -1,5 +1,6 @@
 package io.github.jsixface.api
 
+import io.github.jsixface.common.Settings
 import io.github.jsixface.common.VideoFile
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -9,8 +10,8 @@ import java.io.File
 
 @Serializable
 data class SavedData(
-    val locations: MutableList<String>,
-    val details: MutableMap<String, VideoFile>
+        val settings: Settings,
+        val details: MutableMap<String, VideoFile>
 ) {
 
 
@@ -26,7 +27,7 @@ data class SavedData(
             return if (dataStr.isNotBlank())
                 json.decodeFromString(dataStr)
             else
-                SavedData(mutableListOf(), mutableMapOf())
+                SavedData(Settings(), mutableMapOf())
         }
     }
 }

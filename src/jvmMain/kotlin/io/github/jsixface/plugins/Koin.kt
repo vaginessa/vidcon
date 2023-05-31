@@ -1,7 +1,7 @@
 package io.github.jsixface.plugins
 
 import io.github.jsixface.api.ConversionApi
-import io.github.jsixface.api.LocationApi
+import io.github.jsixface.api.SettingsApi
 import io.github.jsixface.api.VideoApi
 import io.ktor.server.application.Application
 import org.koin.dsl.module
@@ -14,7 +14,7 @@ fun Application.configureKoin() {
 }
 
 private val koinModule = module {
-    single { ConversionApi() }
-    single { LocationApi() }
+    single { SettingsApi() }
     single { VideoApi() }
+    single { ConversionApi(settingsApi = get()) }
 }

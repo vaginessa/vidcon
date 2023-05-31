@@ -76,7 +76,6 @@ kotlin {
                 implementation("io.ktor:ktor-server-cors:${Versions.ktor}")
                 implementation("io.ktor:ktor-server-netty:${Versions.ktor}")
                 implementation("io.ktor:ktor-server-resources:${Versions.ktor}")
-                implementation("io.ktor:ktor-server-websockets:${Versions.ktor}")
             }
         }
 

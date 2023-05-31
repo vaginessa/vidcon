@@ -1,12 +1,12 @@
 package io.github.jsixface.plugins
 
-import io.ktor.http.*
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.serialization.kotlinx.json.json
-import io.ktor.server.plugins.cors.routing.*
-import io.ktor.server.application.*
-import io.ktor.server.application.*
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.server.websocket.WebSockets
+import io.ktor.server.plugins.cors.routing.CORS
 import kotlinx.serialization.json.Json
 
 fun Application.configureHTTP() {
@@ -18,7 +18,6 @@ fun Application.configureHTTP() {
         allowHeader(HttpHeaders.Authorization)
         allowHeader("MyCustomHeader")
     }
-    install(WebSockets)
     install(ContentNegotiation){
         json(Json {
             prettyPrint = true
