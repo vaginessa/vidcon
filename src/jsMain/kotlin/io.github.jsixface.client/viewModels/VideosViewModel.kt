@@ -1,4 +1,4 @@
-package io.github.jsixface.viewmodel
+package io.github.jsixface.client.viewModels
 
 import io.github.jsixface.common.Api
 import io.github.jsixface.common.Conversion
@@ -15,9 +15,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import scope
 
-class VideosViewModel(private val client: HttpClient) {
+class VideosViewModel(private val client: HttpClient) : ViewModel() {
 
     private val _videos = MutableStateFlow(listOf<VideoFile>())
     val videos: Flow<List<VideoFile>> = _videos

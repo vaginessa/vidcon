@@ -1,6 +1,7 @@
 package io.github.jsixface.plugins
 
-import io.github.jsixface.route.locationRoutes
+import io.github.jsixface.route.jobRoutes
+import io.github.jsixface.route.settingsRoutes
 import io.github.jsixface.route.videoRoutes
 import io.ktor.http.ContentType
 import io.ktor.server.application.Application
@@ -31,6 +32,7 @@ fun Application.configureRouting() {
         }
 
         videoRoutes()
-        locationRoutes()
+        settingsRoutes()
+        jobRoutes()
     }
 }

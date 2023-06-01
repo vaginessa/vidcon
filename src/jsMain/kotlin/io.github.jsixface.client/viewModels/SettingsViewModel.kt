@@ -1,4 +1,4 @@
-package io.github.jsixface.viewmodel
+package io.github.jsixface.client.viewModels
 
 import io.github.jsixface.common.Api
 import io.github.jsixface.common.Settings
@@ -12,9 +12,8 @@ import io.ktor.http.contentType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import scope
 
-class SettingsViewModel(private val client: HttpClient) {
+class SettingsViewModel(private val client: HttpClient) : ViewModel() {
 
     private val _settings = MutableStateFlow<Settings?>(null)
     val settings: StateFlow<Settings?> = _settings

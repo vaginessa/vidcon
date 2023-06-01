@@ -1,12 +1,11 @@
-package io.github.jsixface.client
+package io.github.jsixface.client.pages
 
 import androidx.compose.runtime.*
 import app.softwork.bootstrapcompose.*
-import io.github.jsixface.viewmodel.SettingsViewModel
+import io.github.jsixface.client.viewModels.SettingsViewModel
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.attributes.onSubmit
 import org.jetbrains.compose.web.dom.*
-import scope
 
 
 @Composable
@@ -16,7 +15,7 @@ fun ShowSettings(viewModel: SettingsViewModel) {
     val extensions = remember { mutableStateListOf("") }
     var workLocation by remember { mutableStateOf("") }
 
-    scope.launch {
+    viewModel.scope.launch {
         viewModel.settings.collect { s ->
             s?.let {
                 location.clear()

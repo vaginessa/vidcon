@@ -3,6 +3,7 @@
     <ExternalSystemSettings>
       <option name="env">
         <map>
+          <entry key="BIND" value="localhost" />
           <entry key="PORT" value="8080" />
         </map>
       </option>

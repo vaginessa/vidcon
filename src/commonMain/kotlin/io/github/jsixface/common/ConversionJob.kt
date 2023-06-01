@@ -1,0 +1,18 @@
+package io.github.jsixface.common
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class ConversionJob(
+        val jobId: String,
+        val status: JobStatus,
+        val progress: Int,
+        val file: VideoFile
+)
+
+enum class JobStatus {
+    NotStarted,
+    InProgress,
+    Completed,
+    Failed,
+}

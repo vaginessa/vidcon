@@ -4,3 +4,4 @@ ktor:
       - io.github.jsixface.ApplicationKt.module
   deployment:
     port: "$PORT:8080"
+    host : "$BIND:0.0.0.0"

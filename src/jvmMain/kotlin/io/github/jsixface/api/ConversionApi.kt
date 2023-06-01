@@ -18,7 +18,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class ConversionApi(settingsApi: SettingsApi) {
     private val logger = logger()
     private val scope = CoroutineScope(Dispatchers.IO)
-    private val jobs = mutableListOf<ConversionJob>()
+    val jobs = mutableListOf<ConvertingJob>()
     private val workspace = File(settingsApi.getSettings().workspaceLocation)
 
     init {
@@ -41,7 +41,7 @@ class ConversionApi(settingsApi: SettingsApi) {
         val job = scope.launch {
             startJob(file, convSpecs, newFile, updates)
         }
-        val convJob = ConversionJob(
+        val convJob = ConvertingJob(
                 videoFile = file,
                 convSpecs = convSpecs,
                 outFile = newFile,
@@ -144,11 +144,11 @@ class ConversionApi(settingsApi: SettingsApi) {
     }
 }
 
-data class ConversionJob(
+data class ConvertingJob(
         val videoFile: VideoFile,
         val convSpecs: List<Pair<MediaTrack, Conversion>>,
         val outFile: File,
         val job: Job,
         val progress: MutableStateFlow<Int> = MutableStateFlow(0),
-        val jobId: UUID = UUID.randomUUID()
+        val jobId: String = UUID.randomUUID().toString()
 )

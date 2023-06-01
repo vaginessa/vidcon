@@ -12,4 +12,10 @@ sealed interface Api {
 
     @Resource("/settings")
     object Settings : Api
+
+    @Resource("/jobs")
+    object Jobs : Api {
+        @Resource("{id}")
+        class Job(val parent: Jobs = Jobs, val id: String): Api
+    }
 }

@@ -1,4 +1,4 @@
-package io.github.jsixface.client
+package io.github.jsixface.client.pages
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,7 +28,7 @@ import io.github.jsixface.common.TrackType.Audio
 import io.github.jsixface.common.TrackType.Subtitle
 import io.github.jsixface.common.TrackType.Video
 import io.github.jsixface.common.VideoCodecs
-import io.github.jsixface.viewmodel.VideosViewModel
+import io.github.jsixface.client.viewModels.VideosViewModel
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.compose.web.attributes.onSubmit
 import org.jetbrains.compose.web.css.px

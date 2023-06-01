@@ -3,19 +3,18 @@ package io.github.jsixface.client
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import app.softwork.bootstrapcompose.Breakpoint
-import app.softwork.bootstrapcompose.Container
-import app.softwork.bootstrapcompose.Navbar
-import app.softwork.bootstrapcompose.NavbarCollapseBehavior
-import app.softwork.bootstrapcompose.NavbarLink
-import app.softwork.bootstrapcompose.NavbarNav
-import app.softwork.bootstrapcompose.NavbarPlacement
-import app.softwork.bootstrapcompose.Row
+import app.softwork.bootstrapcompose.*
 import app.softwork.routingcompose.HashRouter
 import app.softwork.routingcompose.Router
+import io.github.jsixface.client.pages.ShowJobList
+import io.github.jsixface.client.pages.ShowSettings
+import io.github.jsixface.client.pages.ShowVideo
+import io.github.jsixface.client.pages.VideosPage
+import io.github.jsixface.client.viewModels.JobsViewModel
 import io.github.jsixface.common.Api
-import io.github.jsixface.viewmodel.SettingsViewModel
-import io.github.jsixface.viewmodel.VideosViewModel
+import io.github.jsixface.client.viewModels.SettingsViewModel
+import io.github.jsixface.client.viewModels.VideosViewModel
+import io.github.jsixface.client.viewModels.ViewModel
 import org.jetbrains.compose.web.dom.H1
 import org.jetbrains.compose.web.dom.Li
 import org.jetbrains.compose.web.dom.Text
@@ -23,19 +22,34 @@ import org.jetbrains.compose.web.dom.Text
 @Composable
 fun MainApp(app: AppContainer) {
     val api by app.api.collectAsState()
+    var vm: ViewModel? = null
+
     Header(api)
     HashRouter(initPath = "videos") {
-        val videosViewModel = VideosViewModel(app.client)
+        vm?.destroy()
+
         route("settings") {
-            ShowSettings(SettingsViewModel(app.client))
+            val settingsViewModel = SettingsViewModel(app.client)
+            ShowSettings(settingsViewModel)
+            vm = settingsViewModel
             app.api.value = Api.Settings
         }
         route("videos") {
+            val videosViewModel = VideosViewModel(app.client)
+            vm = videosViewModel
             VideosPage(videosViewModel)
             app.api.value = Api.Videos
         }
         route("video") {
+            val videosViewModel = VideosViewModel(app.client)
+            vm = videosViewModel
             ShowVideo(videosViewModel)
+        }
+        route("jobs") {
+            val jobsViewModel = JobsViewModel(app.client)
+            vm = jobsViewModel
+            ShowJobList(jobsViewModel)
+            app.api.value = Api.Jobs
         }
         noMatch {
             Text("Current route = ${Router.current.currentPath}")
@@ -73,6 +87,12 @@ fun TopNav(api: Api) {
                         active = api == Api.Videos,
                         link = "#/videos"
                 ) { Text("Videos") }
+            }
+            Li(attrs = { classes("nav-item") }) {
+                NavbarLink(
+                        active = api == Api.Jobs,
+                        link = "#/jobs"
+                ) { Text("Jobs") }
             }
         }
     }
