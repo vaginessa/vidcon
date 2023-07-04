@@ -49,7 +49,7 @@ fun VideosPage(viewModel: VideosViewModel) {
     Container {
         Table(
                 pagination = Table.OffsetPagination(
-                        data = videos,
+                        data = videos.sortedBy { it.fileName },
                         entriesPerPageLimit = rowsPerPage
                 ),
                 stripedRows = true,
@@ -109,7 +109,9 @@ fun ShowVideo(viewModel: VideosViewModel) {
                                     (v.videos + v.audios + v.subtitles).forEach {
                                         conversion.getOrPut(it) { Conversion.Copy }
                                     }
-                                    viewModel.convert(v.fileName, conversion)
+                                    viewModel.convert(v.fileName, conversion) {
+                                        router.navigate("/jobs")
+                                    }
                                 }
                             }
                             Column(size = 4) {}

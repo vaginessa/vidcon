@@ -26,32 +26,35 @@ fun MainApp(app: AppContainer) {
 
     Header(api)
     HashRouter(initPath = "videos") {
-        vm?.destroy()
-
         route("settings") {
+            vm?.destroy()
             val settingsViewModel = SettingsViewModel(app.client)
             ShowSettings(settingsViewModel)
             vm = settingsViewModel
             app.api.value = Api.Settings
         }
         route("videos") {
+            vm?.destroy()
             val videosViewModel = VideosViewModel(app.client)
             vm = videosViewModel
             VideosPage(videosViewModel)
             app.api.value = Api.Videos
         }
         route("video") {
+            vm?.destroy()
             val videosViewModel = VideosViewModel(app.client)
             vm = videosViewModel
             ShowVideo(videosViewModel)
         }
         route("jobs") {
+            vm?.destroy()
             val jobsViewModel = JobsViewModel(app.client)
             vm = jobsViewModel
             ShowJobList(jobsViewModel)
             app.api.value = Api.Jobs
         }
         noMatch {
+            vm?.destroy()
             Text("Current route = ${Router.current.currentPath}")
         }
     }

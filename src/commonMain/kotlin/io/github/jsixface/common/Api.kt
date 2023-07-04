@@ -7,7 +7,7 @@ sealed interface Api {
     @Resource("/videos")
     object Videos : Api {
         @Resource("video")
-        class Video(val parent: Videos = Videos, val path: String?) : Api
+        data class Video(val parent: Videos = Videos, val path: String?) : Api
     }
 
     @Resource("/settings")
@@ -16,6 +16,6 @@ sealed interface Api {
     @Resource("/jobs")
     object Jobs : Api {
         @Resource("{id}")
-        class Job(val parent: Jobs = Jobs, val id: String): Api
+        data class Job(val parent: Jobs = Jobs, val id: String): Api
     }
 }

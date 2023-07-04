@@ -37,7 +37,7 @@ class VideosViewModel(private val client: HttpClient) : ViewModel() {
         emit(client.get(Api.Videos.Video(path = file)).body())
     }
 
-    fun convert(file: String, conversionList: Map<MediaTrack, Conversion>) {
+    fun convert(file: String, conversionList: Map<MediaTrack, Conversion>, onComplete: () -> Unit) {
         scope.launch {
             val toConvert = conversionList.entries.map { it.toPair() }
             console.log("Convert List: $toConvert")
@@ -46,6 +46,7 @@ class VideosViewModel(private val client: HttpClient) : ViewModel() {
                 contentType(ContentType.Application.Json)
                 setBody(toConvert)
             }
+            onComplete()
         }
     }
 }

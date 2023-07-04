@@ -22,8 +22,7 @@ fun Routing.jobRoutes() {
     }
 
     delete<Api.Jobs.Job> { job ->
-        val settings = call.receive<Settings>()
-        logger.info("Got new Settings: $settings")
+        logger.info("Going to delete $job")
         jobsApi.stopJob(job.id)
         call.respond(job)
     }

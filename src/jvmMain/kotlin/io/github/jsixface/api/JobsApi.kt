@@ -15,7 +15,8 @@ class JobsApi(private val conversionApi: ConversionApi) {
                     100 -> JobStatus.Completed
                     -1 -> JobStatus.Failed
                     else -> JobStatus.InProgress
-                }
+                },
+                startedAt = "${it.startedAt.date} ${it.startedAt.time}"
         )
     }
 

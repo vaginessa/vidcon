@@ -7,11 +7,16 @@ import io.github.jsixface.logger
 import io.ktor.utils.io.CancellationException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import java.io.File
 import java.io.InputStream
 import java.io.UncheckedIOException
-import java.time.LocalDateTime
+import java.nio.file.Files
 import java.util.UUID
+import kotlin.io.path.Path
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -31,7 +36,7 @@ class ConversionApi(settingsApi: SettingsApi) {
             file: VideoFile,
             convSpecs: List<Pair<MediaTrack, Conversion>>
     ): Boolean {
-        val now = LocalDateTime.now()
+        val now = Clock.System.now()
         val newDir = File(workspace, "$now-${file.fileName}")
         newDir.mkdirs()
         val newFile = File(newDir, file.fileName)
@@ -76,6 +81,19 @@ class ConversionApi(settingsApi: SettingsApi) {
                 process.destroyForcibly()
             }
         }
+        if (process.isAlive) process.destroyForcibly()
+        moveFiles(file, outFile)
+    }
+
+    private fun moveFiles(file: VideoFile, outFile: File) {
+        try {
+            val outFilePath = Path("${file.path}.bkp")
+            logger.info("Moving ${outFile.path} to $outFilePath")
+            Files.move(Path(file.path), outFilePath)
+            Files.move(outFile.toPath(), Path(file.path))
+        } catch (e: Exception) {
+            logger.error("Cannot move file", e)
+        }
     }
 
     private fun parseProcessOut(iStream: InputStream, updates: MutableStateFlow<Int>) {
@@ -103,6 +121,7 @@ class ConversionApi(settingsApi: SettingsApi) {
             }
         } catch (_: UncheckedIOException) {
         }
+        updates.value = 100
     }
 
     internal fun buildCommand(
@@ -150,5 +169,6 @@ data class ConvertingJob(
         val outFile: File,
         val job: Job,
         val progress: MutableStateFlow<Int> = MutableStateFlow(0),
-        val jobId: String = UUID.randomUUID().toString()
+        val jobId: String = UUID.randomUUID().toString(),
+        val startedAt: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 )
