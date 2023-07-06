@@ -38,7 +38,7 @@ jobs:
       with:
         arguments: distTar --scan
         
-    - name: Archive APK
+    - name: Archive package
       uses: actions/upload-artifact@v3
       with:
         name: video-convertor

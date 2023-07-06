@@ -53,6 +53,7 @@ fun VideosPage(viewModel: VideosViewModel) {
                         { filterAudio = it.first() }) {
                             val codecs = videos.flatMap { it.audios }.map { it.codec }
                                     .toSet()
+                            Option("") { Text("") }
                             codecs.forEach { Option(it) { Text(it) } }
                         }
                     }
