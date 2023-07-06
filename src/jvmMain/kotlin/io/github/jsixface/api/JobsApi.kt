@@ -1,7 +1,7 @@
 package io.github.jsixface.api
 
-import io.github.jsixface.common.JobStatus
 import io.github.jsixface.common.ConversionJob
+import io.github.jsixface.common.JobStatus
 import kotlinx.coroutines.cancelAndJoin
 
 class JobsApi(private val conversionApi: ConversionApi) {

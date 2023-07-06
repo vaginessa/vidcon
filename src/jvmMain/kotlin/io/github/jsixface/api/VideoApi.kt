@@ -19,9 +19,9 @@ class VideoApi {
             loc.walk(PathWalkOption.FOLLOW_LINKS).forEach { p ->
                 if (p.isDirectory().not() && data.settings.videoExtensions.contains(p.extension.lowercase())) {
                     scan[p.pathString] = VideoFile(
-                        path = p.pathString,
-                        fileName = p.name,
-                        modifiedTime = p.getLastModifiedTime().toMillis()
+                            path = p.pathString,
+                            fileName = p.name,
+                            modifiedTime = p.getLastModifiedTime().toMillis()
                     )
                 }
             }
@@ -36,17 +36,15 @@ class VideoApi {
         toParse.values.forEach {
             val tracks = parseMediaInfo(it.path)
             details[it.path] = it.copy(
-                videos = tracks.filter { t -> t.type == TrackType.Video },
-                audios = tracks.filter { t -> t.type == TrackType.Audio },
-                subtitles = tracks.filter { t -> t.type == TrackType.Subtitle },
+                    videos = tracks.filter { t -> t.type == TrackType.Video },
+                    audios = tracks.filter { t -> t.type == TrackType.Audio },
+                    subtitles = tracks.filter { t -> t.type == TrackType.Subtitle },
             )
         }
     }
 
     private fun consolidateData(data: MutableMap<String, VideoFile>, scan: VideoList): VideoList {
-        val toScan = scan.filterValues {
-            (((data[it.path]?.modifiedTime ?: 0) < it.modifiedTime))
-        }
+        val toScan = scan.filterValues { data[it.path]?.modifiedTime != it.modifiedTime }
         toScan.forEach { data[it.key] = it.value }
         val toDelete = data.keys.filter { !scan.containsKey(it) }
         toDelete.forEach { data.remove(it) }

@@ -35,12 +35,12 @@ data class MediaTrack(
 
 @Serializable
 data class VideoFile(
-    val path: String,
-    val fileName: String,
-    val modifiedTime: Long,
-    val audios: List<MediaTrack> = listOf(),
-    val videos: List<MediaTrack> = listOf(),
-    val subtitles: List<MediaTrack> = listOf()
+        val path: String,
+        val fileName: String,
+        val modifiedTime: Long,
+        val audios: List<MediaTrack> = listOf(),
+        val videos: List<MediaTrack> = listOf(),
+        val subtitles: List<MediaTrack> = listOf()
 ) {
     val videoInfo: String
         get() = videos.joinToString { it.codec }
@@ -54,7 +54,7 @@ data class VideoFile(
     val modified: String
         get() {
             val dateTime = Instant.fromEpochMilliseconds(modifiedTime)
-                .toLocalDateTime(TimeZone.currentSystemDefault())
+                    .toLocalDateTime(TimeZone.currentSystemDefault())
             return "${dateTime.date} ${dateTime.time}"
         }
 
@@ -62,15 +62,15 @@ data class VideoFile(
 
 @Serializable
 data class MediaStream(
-    val index: Int,
-    @SerialName("codec_name")
-    val codecName: String,
-    @SerialName("codec_type")
-    val codecType: String,
-    val channels: Int = 1
+        val index: Int,
+        @SerialName("codec_name")
+        val codecName: String,
+        @SerialName("codec_type")
+        val codecType: String,
+        val channels: Int = 1
 )
 
 @Serializable
 data class MediaProbeInfo(
-    val streams: List<MediaStream>
+        val streams: List<MediaStream>
 )

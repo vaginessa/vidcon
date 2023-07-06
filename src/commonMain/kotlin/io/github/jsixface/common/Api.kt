@@ -1,6 +1,6 @@
 package io.github.jsixface.common
 
-import io.ktor.resources.*
+import io.ktor.resources.Resource
 
 sealed interface Api {
 
@@ -16,6 +16,6 @@ sealed interface Api {
     @Resource("/jobs")
     object Jobs : Api {
         @Resource("{id}")
-        data class Job(val parent: Jobs = Jobs, val id: String): Api
+        data class Job(val parent: Jobs = Jobs, val id: String) : Api
     }
 }

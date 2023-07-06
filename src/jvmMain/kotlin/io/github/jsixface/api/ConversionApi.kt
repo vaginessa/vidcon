@@ -36,9 +36,8 @@ class ConversionApi(settingsApi: SettingsApi) {
             file: VideoFile,
             convSpecs: List<Pair<MediaTrack, Conversion>>
     ): Boolean {
-        val now = Clock.System.now()
-        val newDir = File(workspace, "$now-${file.fileName}")
-        newDir.mkdirs()
+        val jobId = UUID.randomUUID().toString()
+        val newDir = File(workspace, jobId).apply { mkdirs() }
         val newFile = File(newDir, file.fileName)
 
         // start the new job & add it to the current jobs
@@ -51,7 +50,8 @@ class ConversionApi(settingsApi: SettingsApi) {
                 convSpecs = convSpecs,
                 outFile = newFile,
                 job = job,
-                progress = updates
+                progress = updates,
+                jobId = jobId
         )
         jobs.add(convJob)
         logger.info("convert file ${file.fileName}")
@@ -82,15 +82,19 @@ class ConversionApi(settingsApi: SettingsApi) {
             }
         }
         if (process.isAlive) process.destroyForcibly()
-        moveFiles(file, outFile)
+        if (process.waitFor() == 0) moveFiles(file, outFile)
     }
 
     private fun moveFiles(file: VideoFile, outFile: File) {
+        logger.info("Move file to location")
         try {
-            val outFilePath = Path("${file.path}.bkp")
-            logger.info("Moving ${outFile.path} to $outFilePath")
-            Files.move(Path(file.path), outFilePath)
+            val bkpFile = Path("${file.path}.bkp")
+            logger.info("   Backing up ${file.path}")
+            Files.move(Path(file.path), bkpFile)
+            logger.info("   Move ${outFile.path} to ${file.path}")
             Files.move(outFile.toPath(), Path(file.path))
+            logger.info("   Delete workspace dir. ${outFile.parent}")
+            Files.deleteIfExists(outFile.parentFile.toPath())
         } catch (e: Exception) {
             logger.error("Cannot move file", e)
         }
@@ -169,6 +173,6 @@ data class ConvertingJob(
         val outFile: File,
         val job: Job,
         val progress: MutableStateFlow<Int> = MutableStateFlow(0),
-        val jobId: String = UUID.randomUUID().toString(),
+        val jobId: String,
         val startedAt: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 )

@@ -7,7 +7,6 @@ import io.github.jsixface.api.VideoApi
 import io.ktor.server.application.Application
 import org.koin.dsl.module
 import org.koin.ktor.plugin.koin
-import kotlin.math.sin
 
 fun Application.configureKoin() {
     koin {

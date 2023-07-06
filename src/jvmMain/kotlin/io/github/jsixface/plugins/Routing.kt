@@ -23,8 +23,8 @@ fun Application.configureRouting() {
 
         get("/") {
             call.respondText(
-                this::class.java.classLoader.getResource("index.html")!!.readText(),
-                ContentType.Text.Html
+                    this::class.java.classLoader.getResource("index.html")!!.readText(),
+                    ContentType.Text.Html
             )
         }
         static("/") {

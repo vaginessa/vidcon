@@ -16,7 +16,7 @@ object CodecUtils {
     fun parseMediaInfo(path: String): List<MediaTrack> {
         logger.info("Parsing file $path")
         val builder =
-            ProcessBuilder("ffprobe", "-v", "error", "-show_entries", "stream", "-pretty", "-of", "json", path)
+                ProcessBuilder("ffprobe", "-v", "error", "-show_entries", "stream", "-pretty", "-of", "json", path)
         val process = builder.start()
         val output = process.inputStream.use { it.bufferedReader().readText() }
         process.waitFor()

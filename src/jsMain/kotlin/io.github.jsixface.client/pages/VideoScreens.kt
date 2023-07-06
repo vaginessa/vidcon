@@ -1,42 +1,17 @@
 package io.github.jsixface.client.pages
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import app.softwork.bootstrapcompose.Button
-import app.softwork.bootstrapcompose.Color
-import app.softwork.bootstrapcompose.Column
-import app.softwork.bootstrapcompose.Container
-import app.softwork.bootstrapcompose.FormLabel
-import app.softwork.bootstrapcompose.Row
-import app.softwork.bootstrapcompose.Select
-import app.softwork.bootstrapcompose.SelectContext
-import app.softwork.bootstrapcompose.SelectSize
-import app.softwork.bootstrapcompose.Table
+import androidx.compose.runtime.*
+import app.softwork.bootstrapcompose.*
 import app.softwork.bootstrapcompose.Table.FixedHeaderProperty
-import app.softwork.bootstrapcompose.ZIndex
 import app.softwork.routingcompose.Router
 import app.softwork.routingcompose.navigate
-import io.github.jsixface.common.AudioCodecs
-import io.github.jsixface.common.Conversion
-import io.github.jsixface.common.MediaTrack
-import io.github.jsixface.common.SubtitleCodecs
-import io.github.jsixface.common.TrackType
-import io.github.jsixface.common.TrackType.Audio
-import io.github.jsixface.common.TrackType.Subtitle
-import io.github.jsixface.common.TrackType.Video
-import io.github.jsixface.common.VideoCodecs
 import io.github.jsixface.client.viewModels.VideosViewModel
+import io.github.jsixface.common.*
+import io.github.jsixface.common.TrackType.*
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.compose.web.attributes.onSubmit
 import org.jetbrains.compose.web.css.px
-import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.Form
-import org.jetbrains.compose.web.dom.H2
-import org.jetbrains.compose.web.dom.H4
-import org.jetbrains.compose.web.dom.Text
+import org.jetbrains.compose.web.dom.*
 
 
 @Composable
@@ -44,27 +19,80 @@ fun VideosPage(viewModel: VideosViewModel) {
     val videos by viewModel.videos.collectAsState(listOf(), Dispatchers.Default)
     val router = Router.current
     val rowsPerPage = remember { mutableStateOf(20) }
-    if (videos.isEmpty()) return
+    var filterName by remember { mutableStateOf("") }
+    var filterAudio by remember { mutableStateOf("") }
+    var filterVideo by remember { mutableStateOf("") }
 
-    Container {
-        Table(
-                pagination = Table.OffsetPagination(
-                        data = videos.sortedBy { it.fileName },
-                        entriesPerPageLimit = rowsPerPage
-                ),
-                stripedRows = true,
-                fixedHeader = FixedHeaderProperty(
-                        topSize = 50.px,
-                        zIndex = ZIndex(1000)
-                )
-        ) { _, file ->
-            column("Filename") { Text(file.fileName) }
-            column("Audio Codecs") { Text(file.audioInfo) }
-            column("Video Codecs") { Text(file.videoInfo) }
-            column("Modified") { Text(file.modified) }
-            column("") {
-                Button(title = "Convert", color = Color.Success) {
-                    router.navigate("/video", mapOf("path" to file.fileName))
+    val filteredVideos = videos.filter {
+        if (filterName.length >= 3) it.fileName.lowercase().contains(filterName.lowercase()) else true
+    }.filter { v ->
+        if (filterAudio.isNotEmpty()) v.audios.any { c -> c.codec == filterAudio } else true
+    }.filter { v ->
+        if (filterVideo.isNotEmpty()) v.videos.any { c -> c.codec == filterVideo } else true
+    }.sortedBy {
+        it.fileName
+    }
+
+    Container(attrs = { classes("my-3") }) {
+        Row {
+            Column(size = 10, attrs = { classes("offset-md-1") }) {
+                Row {
+                    Column(size = 3) { FormLabel { Text("File Name") } }
+                    Column(size = 8) {
+                        InputGroup {
+                            TextInput(value = filterName, placeholder = "Filename") {
+                                filterName = it.value
+                            }
+                        }
+                    }
+                }
+                Row {
+                    Column(size = 3) { FormLabel { Text("Audio codec") } }
+                    Column {
+                        Select(size = SelectSize.Default, multiple = false, onChange =
+                        { filterAudio = it.first() }) {
+                            val codecs = videos.flatMap { it.audios }.map { it.codec }
+                                    .toSet()
+                            codecs.forEach { Option(it) { Text(it) } }
+                        }
+                    }
+                }
+                Row {
+                    Column(size = 3) { FormLabel { Text("Video codec") } }
+                    Column {
+                        Select(size = SelectSize.Default, multiple = false, onChange =
+                        { filterVideo = it.first() }) {
+                            val codecs = videos.flatMap { it.videos }.map { it.codec }
+                                    .toSet()
+                            Option("") { Text("") }
+                            codecs.forEach { Option(it) { Text(it) } }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if (filteredVideos.isNotEmpty()) {
+        Container {
+            Table(
+                    pagination = Table.OffsetPagination(
+                            data = filteredVideos,
+                            entriesPerPageLimit = rowsPerPage
+                    ),
+                    stripedRows = true,
+                    fixedHeader = FixedHeaderProperty(
+                            topSize = 50.px,
+                            zIndex = ZIndex(1000)
+                    )
+            ) { _, file ->
+                column("Filename") { Text(file.fileName) }
+                column("Audio Codecs") { Text(file.audioInfo) }
+                column("Video Codecs") { Text(file.videoInfo) }
+                column("Modified") { Text(file.modified) }
+                column("") {
+                    Button(title = "Convert", color = Color.Success) {
+                        router.navigate("/video", mapOf("path" to file.fileName))
+                    }
                 }
             }
         }

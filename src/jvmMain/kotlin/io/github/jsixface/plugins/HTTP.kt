@@ -18,7 +18,7 @@ fun Application.configureHTTP() {
         allowHeader(HttpHeaders.Authorization)
         allowHeader("MyCustomHeader")
     }
-    install(ContentNegotiation){
+    install(ContentNegotiation) {
         json(Json {
             prettyPrint = true
             isLenient = true

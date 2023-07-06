@@ -25,7 +25,7 @@ fun Routing.videoRoutes() {
     val conversionApi by inject<ConversionApi>()
 
     get<Api.Videos> {
-        call.respond(videoApi.getVideos().values.toList())
+        call.respond(videoApi.getVideos().values.toList().sortedBy { it.fileName })
     }
 
     get<Api.Videos.Video> { video ->
