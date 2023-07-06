@@ -64,7 +64,7 @@ data class VideoFile(
 data class MediaStream(
         val index: Int,
         @SerialName("codec_name")
-        val codecName: String,
+        val codecName: String = "",
         @SerialName("codec_type")
         val codecType: String,
         val channels: Int = 1
