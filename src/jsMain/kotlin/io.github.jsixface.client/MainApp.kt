@@ -64,38 +64,20 @@ fun MainApp(app: AppContainer) {
 fun Header(api: Api) {
     Container {
         Row {
-            H1 { Text("Video Convertor") }
-        }
-        Row {
-            TopNav(api)
-        }
-    }
-}
-
-@Composable
-fun TopNav(api: Api) {
-    Navbar(
-            placement = NavbarPlacement.StickyTop,
-            collapseBehavior = NavbarCollapseBehavior.AtBreakpoint(Breakpoint.Large),
-    ) {
-        NavbarNav {
-            Li(attrs = { classes("nav-item") }) {
-                NavbarLink(
-                        active = api == Api.Settings,
-                        link = "#/settings"
-                ) { Text("Settings") }
-            }
-            Li(attrs = { classes("nav-item") }) {
-                NavbarLink(
-                        active = api == Api.Videos,
-                        link = "#/videos"
-                ) { Text("Videos") }
-            }
-            Li(attrs = { classes("nav-item") }) {
-                NavbarLink(
-                        active = api == Api.Jobs,
-                        link = "#/jobs"
-                ) { Text("Jobs") }
+            Navbar(
+                    placement = NavbarPlacement.StickyTop,
+                    collapseBehavior = NavbarCollapseBehavior.Never,
+                    fluid = true,
+                    colorScheme = Color.Dark,
+                    backgroundColor = Color.Dark,
+                    brand = { Brand { Text("Video Convertor") } },
+                    navAttrs = {
+                        classes("me-auto")
+                    },
+            ) {
+                NavbarLink(active = api == Api.Settings, link = "#/settings") { Text("Settings") }
+                NavbarLink(active = api == Api.Videos, link = "#/videos") { Text("Videos") }
+                NavbarLink(active = api == Api.Jobs, link = "#/jobs") { Text("Jobs") }
             }
         }
     }

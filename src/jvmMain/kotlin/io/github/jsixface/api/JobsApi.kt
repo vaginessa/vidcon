@@ -3,10 +3,12 @@ package io.github.jsixface.api
 import io.github.jsixface.common.ConversionJob
 import io.github.jsixface.common.JobStatus
 import kotlinx.coroutines.cancelAndJoin
+import kotlin.math.min
 
 class JobsApi(private val conversionApi: ConversionApi) {
 
     fun getJobs(): List<ConversionJob> = conversionApi.jobs.map {
+        val startedTime = it.startedAt.time.apply { "$hour:$minute:$second" }
         ConversionJob(jobId = it.jobId,
                 progress = it.progress.value,
                 file = it.videoFile,
@@ -16,8 +18,13 @@ class JobsApi(private val conversionApi: ConversionApi) {
                     -1 -> JobStatus.Failed
                     else -> JobStatus.InProgress
                 },
-                startedAt = "${it.startedAt.date} ${it.startedAt.time}"
+                startedAt = "${it.startedAt.date} $startedTime"
         )
+    }
+
+    fun clearFinished(): List<ConversionJob> {
+        conversionApi.clearFinished()
+        return getJobs()
     }
 
     suspend fun stopJob(jobId: String) {
@@ -27,5 +34,4 @@ class JobsApi(private val conversionApi: ConversionApi) {
             it.outFile.deleteOnExit()
         }
     }
-
 }

@@ -35,6 +35,13 @@ class JobsViewModel(private val client: HttpClient) : ViewModel() {
         }
     }
 
+    fun clearJobs() {
+        scope.launch {
+            console.log("Clearing finished jobs")
+            client.delete(Api.Jobs)
+        }
+    }
+
     fun cancelJob(id: String) {
         scope.launch {
             console.log("Cancelling job $id")

@@ -14,7 +14,9 @@ import kotlinx.datetime.toLocalDateTime
 import java.io.File
 import java.io.InputStream
 import java.io.UncheckedIOException
+import java.nio.file.CopyOption
 import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.util.UUID
 import kotlin.io.path.Path
 import kotlin.time.Duration
@@ -30,6 +32,10 @@ class ConversionApi(settingsApi: SettingsApi) {
         if (workspace.isDirectory.not()) {
             workspace.mkdirs()
         }
+    }
+
+    fun clearFinished() {
+        jobs.removeAll { it.progress.value == -1 || it.progress.value == 100 }
     }
 
     suspend fun startConversion(
@@ -88,7 +94,7 @@ class ConversionApi(settingsApi: SettingsApi) {
     private fun moveFiles(file: VideoFile, outFile: File) {
         logger.info("Move file to location")
         try {
-            val bkpFile = Path("${file.path}.bkp")
+            val bkpFile = Path("${file.path}.${Clock.System.now().epochSeconds}.bkp")
             logger.info("   Backing up ${file.path}")
             Files.move(Path(file.path), bkpFile)
             logger.info("   Move ${outFile.path} to ${file.path}")
@@ -116,7 +122,6 @@ class ConversionApi(settingsApi: SettingsApi) {
                         currentDur?.let { c ->
                             duration?.let { d ->
                                 val percent = c.inWholeSeconds * 100 / d.inWholeSeconds
-//                                logger.info("Dur= $d; Cur=$c; Completed=${percent}%")
                                 updates.value = percent.toInt()
                             }
                         }

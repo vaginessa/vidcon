@@ -7,7 +7,7 @@ import io.ktor.server.application.call
 import io.ktor.server.resources.delete
 import io.ktor.server.resources.get
 import io.ktor.server.response.respond
-import io.ktor.server.routing.Routing
+import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
 fun Routing.jobRoutes() {
@@ -17,6 +17,10 @@ fun Routing.jobRoutes() {
     get<Api.Jobs> {
         val jobs = jobsApi.getJobs()
         call.respond(jobs)
+    }
+
+    delete<Api.Jobs> {
+        call.respond(jobsApi.clearFinished())
     }
 
     delete<Api.Jobs.Job> { job ->

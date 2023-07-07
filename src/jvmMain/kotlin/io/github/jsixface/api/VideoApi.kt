@@ -11,7 +11,7 @@ typealias VideoList = Map<String, VideoFile>
 @OptIn(ExperimentalPathApi::class)
 class VideoApi {
 
-    fun getVideos(): VideoList {
+    fun refreshDirs() {
         val data = SavedData.load()
         val scan = mutableMapOf<String, VideoFile>()
         data.settings.libraryLocations.forEach { l ->
@@ -29,17 +29,19 @@ class VideoApi {
         val toParse: VideoList = consolidateData(data.details, scan)
         parseMediaFiles(data.details, toParse)
         data.save()
-        return data.details
     }
 
+    fun getVideos(): VideoList = SavedData.load().details
+
     private fun parseMediaFiles(details: MutableMap<String, VideoFile>, toParse: VideoList) {
-        toParse.values.forEach {
-            val tracks = parseMediaInfo(it.path)
-            details[it.path] = it.copy(
-                    videos = tracks.filter { t -> t.type == TrackType.Video },
-                    audios = tracks.filter { t -> t.type == TrackType.Audio },
-                    subtitles = tracks.filter { t -> t.type == TrackType.Subtitle },
-            )
+        toParse.values.forEach { videoFile ->
+            parseMediaInfo(videoFile.path)?.let { tracks ->
+                details[videoFile.path] = videoFile.copy(
+                        videos = tracks.filter { t -> t.type == TrackType.Video },
+                        audios = tracks.filter { t -> t.type == TrackType.Audio },
+                        subtitles = tracks.filter { t -> t.type == TrackType.Subtitle },
+                )
+            }
         }
     }
 

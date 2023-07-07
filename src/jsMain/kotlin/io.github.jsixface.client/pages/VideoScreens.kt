@@ -32,42 +32,37 @@ fun VideosPage(viewModel: VideosViewModel) {
     }.sortedBy {
         it.fileName
     }
+    val aCodecs = videos.flatMap { it.audios }.map { it.codec }.toSet()
+    val vCodecs = videos.flatMap { it.videos }.map { it.codec }.toSet()
 
     Container(attrs = { classes("my-3") }) {
         Row {
             Column(size = 10, attrs = { classes("offset-md-1") }) {
                 Row {
-                    Column(size = 3) { FormLabel { Text("File Name") } }
-                    Column(size = 8) {
-                        InputGroup {
-                            TextInput(value = filterName, placeholder = "Filename") {
-                                filterName = it.value
-                            }
+                    Column(size = 2) { FormLabel { Text("File Name") } }
+                    Column { InputGroup { TextInput(value = filterName) { filterName = it.value } } }
+                }
+                Row {
+                    Column(size = 2) { FormLabel { Text("Audio codec") } }
+                    Column {
+                        Select(size = SelectSize.Default, multiple = false, onChange = { filterAudio = it.first() }) {
+                            Option("") { Text("") }
+                            aCodecs.forEach { Option(it) { Text(it) } }
                         }
                     }
                 }
                 Row {
-                    Column(size = 3) { FormLabel { Text("Audio codec") } }
+                    Column(size = 2) { FormLabel { Text("Video codec") } }
                     Column {
-                        Select(size = SelectSize.Default, multiple = false, onChange =
-                        { filterAudio = it.first() }) {
-                            val codecs = videos.flatMap { it.audios }.map { it.codec }
-                                    .toSet()
+                        Select(size = SelectSize.Default, multiple = false, onChange = { filterVideo = it.first() }) {
                             Option("") { Text("") }
-                            codecs.forEach { Option(it) { Text(it) } }
+                            vCodecs.forEach { Option(it) { Text(it) } }
                         }
                     }
                 }
-                Row {
-                    Column(size = 3) { FormLabel { Text("Video codec") } }
-                    Column {
-                        Select(size = SelectSize.Default, multiple = false, onChange =
-                        { filterVideo = it.first() }) {
-                            val codecs = videos.flatMap { it.videos }.map { it.codec }
-                                    .toSet()
-                            Option("") { Text("") }
-                            codecs.forEach { Option(it) { Text(it) } }
-                        }
+                Row(attrs = { classes("mt-3") }) {
+                    Column(size = 2, attrs = { classes("offset-md-4") }) {
+                        Button(title = "Refresh", color = Color.Info) { viewModel.refresh() }
                     }
                 }
             }

@@ -9,8 +9,7 @@ import io.github.jsixface.logger
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
-import io.ktor.server.resources.get
-import io.ktor.server.resources.post
+import io.ktor.server.resources.*
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondNullable
 import io.ktor.server.response.respondRedirect
@@ -26,6 +25,11 @@ fun Routing.videoRoutes() {
 
     get<Api.Videos> {
         call.respond(videoApi.getVideos().values.toList().sortedBy { it.fileName })
+    }
+
+    patch<Api.Videos> {
+        videoApi.refreshDirs()
+        call.respond(HttpStatusCode.Accepted)
     }
 
     get<Api.Videos.Video> { video ->

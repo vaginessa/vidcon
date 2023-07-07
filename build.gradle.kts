@@ -7,17 +7,16 @@ object Versions {
     const val logback = "1.2.11"
 }
 
-
 plugins {
-    kotlin("multiplatform") version "1.8.10"
-    kotlin("plugin.serialization") version "1.8.10"
-    id("org.jetbrains.compose") version "1.3.1"
-    id("io.ktor.plugin") version "2.2.4"
+    kotlin("multiplatform")
+    kotlin("plugin.serialization")
+    id("org.jetbrains.compose")
+    id("io.ktor.plugin")
     application //to run JVM part
 }
 
 group = "io.github.jsixface"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 repositories {
     mavenCentral()
@@ -104,7 +103,6 @@ kotlin {
 
 application {
     mainClass.set("io.ktor.server.cio.EngineMain")
-//    mainClass.set("io.github.jsixface.ApplicationKt")
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }

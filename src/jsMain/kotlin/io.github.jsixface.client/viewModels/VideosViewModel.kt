@@ -6,8 +6,7 @@ import io.github.jsixface.common.MediaTrack
 import io.github.jsixface.common.VideoFile
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.plugins.resources.get
-import io.ktor.client.plugins.resources.post
+import io.ktor.client.plugins.resources.*
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -31,6 +30,10 @@ class VideosViewModel(private val client: HttpClient) : ViewModel() {
             _videos.value = client.get(Api.Videos).body()
             videoList = _videos.value
         }
+    }
+
+    fun refresh() {
+        scope.launch { client.patch(Api.Videos) }
     }
 
     fun loadFile(file: String): Flow<VideoFile?> = flow {

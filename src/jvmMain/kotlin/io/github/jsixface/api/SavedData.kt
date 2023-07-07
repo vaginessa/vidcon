@@ -17,13 +17,17 @@ data class SavedData(
 
     fun save() {
         val dataStr = json.encodeToString(this)
-        dataFile.writeText(dataStr)
+        synchronized(lock) {
+            dataFile.writeText(dataStr)
+        }
     }
 
     companion object {
+        private val lock = Any()
+
         fun load(): SavedData {
             if (dataFile.exists().not()) dataFile.createNewFile()
-            val dataStr = dataFile.readText()
+            val dataStr = synchronized(lock) { dataFile.readText() }
             return if (dataStr.isNotBlank())
                 json.decodeFromString(dataStr)
             else

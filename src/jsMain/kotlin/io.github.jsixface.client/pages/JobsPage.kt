@@ -16,12 +16,14 @@ fun ShowJobList(viewModel: JobsViewModel) {
     if (jobList.isEmpty()) return
 
     Container {
-        H1 {
-            Text("Job List")
+        Row(attrs = { classes("mt-3") }) {
+            Column(size = 8) { H1 { Text("Job List") } }
+            Column { Button(title = "Clear Completed", color = Color.Info) { viewModel.clearJobs() } }
         }
+
         Table(
                 pagination = Table.OffsetPagination(
-                        data = jobList,
+                        data = jobList.sortedByDescending { it.startedAt },
                         entriesPerPageLimit = rowsPerPage
                 ),
                 stripedRows = true,
@@ -31,13 +33,13 @@ fun ShowJobList(viewModel: JobsViewModel) {
                 )
         ) { _, job ->
             column("Job ID") { Text(job.jobId) }
-            column("Progress") { Text(job.progress.toString()) }
+            column("Progress") { Text("${job.progress} %") }
             column("Status") { Text(job.status.name) }
             column("Started At") { Text(job.startedAt) }
             column("File") { Text(job.file.fileName) }
             column("") {
                 if (job.status == JobStatus.InProgress) {
-                    Button(title = "Cancel", color = Color.Success) {
+                    Button(title = "Cancel", color = Color.Danger) {
                         viewModel.cancelJob(job.jobId)
                     }
                 } else {
