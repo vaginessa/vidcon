@@ -19,21 +19,17 @@ class VideosViewModel(private val client: HttpClient) : ViewModel() {
 
     private val _videos = MutableStateFlow(listOf<VideoFile>())
     val videos: Flow<List<VideoFile>> = _videos
-    private var videoList = listOf<VideoFile>()
 
     init {
         loadVideos()
     }
 
     private fun loadVideos() {
-        scope.launch {
-            _videos.value = client.get(Api.Videos).body()
-            videoList = _videos.value
-        }
+        scope.launch { _videos.value = client.get(Api.Videos).body() }
     }
 
     fun refresh() {
-        scope.launch { client.patch(Api.Videos) }
+        scope.launch { _videos.value = client.patch(Api.Videos).body() }
     }
 
     fun loadFile(file: String): Flow<VideoFile?> = flow {

@@ -29,7 +29,7 @@ fun Routing.videoRoutes() {
 
     patch<Api.Videos> {
         videoApi.refreshDirs()
-        call.respond(HttpStatusCode.Accepted)
+        call.respond(videoApi.getVideos().values.toList().sortedBy { it.fileName })
     }
 
     get<Api.Videos.Video> { video ->
