@@ -3,6 +3,7 @@ package io.github.jsixface
 import io.github.jsixface.plugins.configureHTTP
 import io.github.jsixface.plugins.configureKoin
 import io.github.jsixface.plugins.configureRouting
+import io.github.jsixface.plugins.configureWatchers
 import io.ktor.server.application.Application
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -16,6 +17,7 @@ fun Application.module() {
     configureKoin()
     configureHTTP()
     configureRouting()
+    configureWatchers()
 }
 
 
