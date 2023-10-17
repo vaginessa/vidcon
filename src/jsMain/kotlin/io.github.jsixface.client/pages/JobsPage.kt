@@ -3,7 +3,8 @@ package io.github.jsixface.client.pages
 import androidx.compose.runtime.*
 import app.softwork.bootstrapcompose.*
 import io.github.jsixface.client.viewModels.JobsViewModel
-import io.github.jsixface.common.JobStatus
+import io.github.jsixface.common.JobStatus.InProgress
+import io.github.jsixface.common.JobStatus.Queued
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.H1
 import org.jetbrains.compose.web.dom.Text
@@ -38,7 +39,7 @@ fun ShowJobList(viewModel: JobsViewModel) {
             column("Started At") { Text(job.startedAt) }
             column("File") { Text(job.file.fileName) }
             column("") {
-                if (job.status == JobStatus.InProgress) {
+                if (job.status in listOf(InProgress, Queued)) {
                     Button(title = "Cancel", color = Color.Danger) {
                         viewModel.cancelJob(job.jobId)
                     }

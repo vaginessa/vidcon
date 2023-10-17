@@ -17,14 +17,14 @@ object CodecUtils {
         logger.info("Parsing file $path")
         val builder =
                 ProcessBuilder("ffprobe", "-v", "error", "-show_entries", "stream", "-pretty", "-of", "json", path)
-        val probeInfo  = runCatching {
+        val probeInfo = runCatching {
             val process = builder.start()
             val output = process.inputStream.use { it.bufferedReader().readText() }
             process.waitFor()
             json.decodeFromString<MediaProbeInfo>(output)
         }
         probeInfo.exceptionOrNull()?.let { logger.error("Cant get ") }
-        return  probeInfo.getOrNull()?.streams?.mapNotNull { s ->
+        return probeInfo.getOrNull()?.streams?.mapNotNull { s ->
             val trackType = when (s.codecType) {
                 "audio" -> TrackType.Audio
                 "video" -> TrackType.Video

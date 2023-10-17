@@ -12,8 +12,9 @@ data class ConversionJob(
 )
 
 enum class JobStatus {
-    NotStarted,
+    Starting,
     InProgress,
     Completed,
     Failed,
+    Queued,
 }

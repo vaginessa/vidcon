@@ -14,17 +14,16 @@ import kotlinx.datetime.toLocalDateTime
 import java.io.File
 import java.io.InputStream
 import java.io.UncheckedIOException
-import java.nio.file.CopyOption
 import java.nio.file.Files
-import java.nio.file.StandardCopyOption
 import java.util.UUID
 import kotlin.io.path.Path
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 class ConversionApi(settingsApi: SettingsApi) {
     private val logger = logger()
-    private val scope = CoroutineScope(Dispatchers.IO)
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     val jobs = mutableListOf<ConvertingJob>()
     private val workspace = File(settingsApi.getSettings().workspaceLocation)
 
@@ -32,35 +31,42 @@ class ConversionApi(settingsApi: SettingsApi) {
         if (workspace.isDirectory.not()) {
             workspace.mkdirs()
         }
+        scope.launch {
+            while (isActive) {
+                val pendingJobs = jobs.filter { it.job == null }
+                if (pendingJobs.isNotEmpty()) {
+                    val nextJob = pendingJobs.first()
+                    if (jobs.none { it.job?.isActive == true }) {
+                        logger.info("Starting conversion for ${nextJob.videoFile}")
+                        with(nextJob) {
+                            job = launch { startJob(videoFile, convSpecs, outFile, progress) }
+                        }
+                    }
+                }
+                delay(1.seconds)
+            }
+        }
     }
 
     fun clearFinished() {
         jobs.removeAll { it.progress.value == -1 || it.progress.value == 100 }
     }
 
-    suspend fun startConversion(
-            file: VideoFile,
-            convSpecs: List<Pair<MediaTrack, Conversion>>
-    ): Boolean {
+    fun startConversion(file: VideoFile, convSpecs: List<Pair<MediaTrack, Conversion>>): Boolean {
         val jobId = UUID.randomUUID().toString()
         val newDir = File(workspace, jobId).apply { mkdirs() }
-        val newFile = File(newDir, file.fileName)
 
-        // start the new job & add it to the current jobs
-        val updates = MutableStateFlow(0)
-        val job = scope.launch {
-            startJob(file, convSpecs, newFile, updates)
-        }
+        // add it to the job queue
         val convJob = ConvertingJob(
                 videoFile = file,
                 convSpecs = convSpecs,
-                outFile = newFile,
-                job = job,
-                progress = updates,
+                outFile = File(newDir, file.fileName),
+                job = null,
+                progress = MutableStateFlow(0),
                 jobId = jobId
         )
         jobs.add(convJob)
-        logger.info("convert file ${file.fileName}")
+        logger.info("Queued to convert file ${file.fileName}")
         return true
     }
 
@@ -176,7 +182,7 @@ data class ConvertingJob(
         val videoFile: VideoFile,
         val convSpecs: List<Pair<MediaTrack, Conversion>>,
         val outFile: File,
-        val job: Job,
+        var job: Job?,
         val progress: MutableStateFlow<Int> = MutableStateFlow(0),
         val jobId: String,
         val startedAt: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())

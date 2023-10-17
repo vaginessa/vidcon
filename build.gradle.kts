@@ -126,14 +126,6 @@ tasks.getByName<Jar>("jvmJar") {
     ) // bring output file along into the JAR
 }
 
-tasks {
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "11"
-        }
-    }
-}
-
 distributions {
     main {
         contents {

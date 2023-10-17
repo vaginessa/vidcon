@@ -15,8 +15,6 @@ import io.github.jsixface.client.viewModels.SettingsViewModel
 import io.github.jsixface.client.viewModels.VideosViewModel
 import io.github.jsixface.client.viewModels.ViewModel
 import io.github.jsixface.common.Api
-import org.jetbrains.compose.web.dom.H1
-import org.jetbrains.compose.web.dom.Li
 import org.jetbrains.compose.web.dom.Text
 
 @Composable
